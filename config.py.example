@@ -1,0 +1,14 @@
+# Config File for WW
+token = '' # Bot Token Goes Here
+hostId = 0 # Discord ID for the host
+gameAdmins = [] # Discord IDs, seperated by commas
+serverId = 0
+# Channels
+gameChannelId = 0 # Game Channel
+wolfchatChannelId = 0 # Wolfchat
+spectatorsChannelId = 0 # Spectators Channel
+# Roles
+playerRoleId = 0
+
+# Testing Config
+testingIds = [] # Optional. Used to insert players into a game on !test. If !test is never used, this is not needed

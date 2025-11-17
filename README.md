@@ -26,5 +26,6 @@ A full breakdown of the bot's content can be found here: https://docs.google.com
   - Updating the "self.gamemodes" list (line 200) to add the name of your gamemode in all lower case
   - Update the "getModeRoles" function (line 2010) to associate the mode's name used in voting with the roles dictionary.
   - If there are any issues, check first that your roles dictionary/matrix looks like the others (self.default, self.chaos & self.orgy), then make sure you have used the same name in the changes to "getModeRoles" as you have for the changes to "self.gamemodes".
+- May contain spelling mistakes
 
 

@@ -4,6 +4,7 @@ A Discord bot to run a game of "Werewolf", a variation of the "Town of Salem" ga
 ## Requirements
 - Python 3.13+
 - Discord.py
+- SQLite 3.51+
 
 ## Features
 - 3 Gamemodes (Default, Chaos, Orgy)
@@ -14,6 +15,7 @@ A full breakdown of the bot's content can be found here: https://docs.google.com
 
 ## Setup
 - Download Python and the required library
+- Download SQLite (https://sqlite.org/)
 - Set up a discord application with a bot user, see instructions here: https://discordpy.readthedocs.io/en/stable/discord.html
 - Download the repository
 - Enter your server specific information into the "config.py.example" file and remove ".example" from its name

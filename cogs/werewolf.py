@@ -81,6 +81,7 @@ class player():
         # Updating Player Status
         self.alive = False
         await self.member.remove_roles(game.playerRole,reason=f"[{game.gameId}] Werewolf Game Death")
+        await game.spectatorChannel.set_permissions(self.member,overwrite=None,reason=f"[{game.gameId}] Werewolf Game Death")
         game.livingPlayersNames.pop(self.member.id)
         # Removing Access from wolf chat for wolf team members
         if self.role[0] == "W":
@@ -178,6 +179,7 @@ class werewolf(commands.Cog):
         self.guild : discord.Guild | None = None
         self.everyoneRole : discord.Role | None = None
         self.gameChannel : discord.TextChannel | None = None
+        self.spectatorChannel : discord.TextChannel | None = None
         self.playerRole : discord.Role | None = None
         # Status Variables
         self.gameRunning = False
@@ -364,6 +366,7 @@ class werewolf(commands.Cog):
             self.gameChannel = self.guild.get_channel(self.gameChannelId)
             self.wolfChannel = self.guild.get_channel(self.wolfchatChannelId)
             self.playerRole = self.guild.get_role(self.playerRoleId)
+            self.spectatorChannel = self.guild.get_channel(self.spectatorsChannelId)
         except Exception as e:
             print(f"{e}")
     
@@ -740,6 +743,7 @@ class werewolf(commands.Cog):
                 for player in self.players.values():
                     if player.alive:
                         await player.member.remove_roles(self.playerRole,reason=f"Admin Game Reset [{ctx.author.display_name}]")
+                        await self.spectatorChannel.set_permissions(player.member,overwrite=None,reason=f"Admin Game Reset [{ctx.author.display_name}]")
                         if player.role[0] == "W":
                             await self.wolfChannel.set_permissions(player.member,overwrite=None,reason=f"Admin Game Reset [{ctx.author.display_name}]")
                 # Clear and Reset Variables
@@ -817,6 +821,7 @@ class werewolf(commands.Cog):
                 # Discord Role Assignment
                 playerRole = indPlayer.member.guild.get_role(self.playerRoleId)
                 await indPlayer.member.add_roles(playerRole,reason=f"[{self.gameId}] Werewolf Game Initiation")
+                await self.spectatorChannel.set_permissions(indPlayer.member, read_messages = False, send_messages = False, reason = f"[{self.gameId}] Werewolf Game Initiation")
                 # Game Role Assignment
                 roleIndex = random.randint(0,(len(gameRoles)-1))
                 indPlayer.role = gameRoles[roleIndex]
@@ -907,6 +912,7 @@ class werewolf(commands.Cog):
             for item in self.livingPlayersNames:
                 player = self.players[item]
                 await player.member.remove_roles(self.playerRole,reason=f"[{self.gameId}] Werewolf Game End")
+                await self.spectatorChannel.set_permissions(player.member,overwrite=None,reason=f"[{self.gameId}] Werewolf Game End")
                 if player.role[0] == "W":
                     await self.wolfChannel.set_permissions(player.member,overwrite=None,reason=f"[{self.gameId}] Werewolf Game End")
             # Aesthetics Bit

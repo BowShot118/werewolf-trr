@@ -281,9 +281,9 @@ class werewolf(commands.Cog):
         # Roles and Role Number for 
         self.testingMode = {
             "players" : [4,5,6,7,8,9,10,11,12,13,14,15,16],
-            "V-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Villager
-            "W-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf
-            "V-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Seer
+            "V-1"     : [0,3,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Villager
+            "W-1"     : [0,1,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf
+            "V-2"     : [0,1,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Seer
             "V-3"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Shaman
             "V-4"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Harlot
             "V-5"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Matchmaker
@@ -804,7 +804,9 @@ class werewolf(commands.Cog):
             if "S-1" in secondaryRoles:
                 vilCount = gameRoles.count("V-1")
             # Locks the channel
-            await self.gameChannel.set_permissions(self.everyoneRole, send_messages=False, reason=f"[{self.gameId}] Werewolf Game Start")
+            chatOverwrite = self.gameChannel.overwrites_for(self.everyoneRole)
+            chatOverwrite.send_messages = False
+            await self.gameChannel.set_permissions(self.everyoneRole, overwrite=chatOverwrite, reason=f"[{self.gameId}] Werewolf Game Start")
             ##
             pingList = ""
             # Goes through per player assignment
@@ -960,7 +962,9 @@ class werewolf(commands.Cog):
             self.winningFool = 0
             
             # Restoring game channel access
-            await self.gameChannel.set_permissions(self.everyoneRole, send_messages=True,reason=f"[{self.gameId}] Werewolf Game End")
+            chatOverwrite = self.gameChannel.overwrites_for(self.everyoneRole)
+            chatOverwrite.send_messages = True
+            await self.gameChannel.set_permissions(self.everyoneRole, overwrite=chatOverwrite,reason=f"[{self.gameId}] Werewolf Game End")
             self.gameId = 0
             logs.info("Game Over processed successfully")
         except Exception as e:

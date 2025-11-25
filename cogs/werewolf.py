@@ -84,8 +84,8 @@ class player():
         await game.spectatorChannel.set_permissions(self.member,overwrite=None,reason=f"[{game.gameId}] Werewolf Game Death")
         game.livingPlayersNames.pop(self.member.id)
         # Removing Access from wolf chat for wolf team members
-        if self.role[0] == "W":
-            await game.wolfChannel.set_permissions(self.member,overwrite=None,reason=f"[{game.gameId}] Werewolf Game Death")
+        await game.wolfChannel.set_permissions(self.member,overwrite=None,reason=f"[{game.gameId}] Werewolf Game Death")
+
         # Traitor Game Rule
         if self.role == "W-2":
             roleToReturn = "V-1"
@@ -744,8 +744,7 @@ class werewolf(commands.Cog):
                     if player.alive:
                         await player.member.remove_roles(self.playerRole,reason=f"Admin Game Reset [{ctx.author.display_name}]")
                         await self.spectatorChannel.set_permissions(player.member,overwrite=None,reason=f"Admin Game Reset [{ctx.author.display_name}]")
-                        if player.role[0] == "W":
-                            await self.wolfChannel.set_permissions(player.member,overwrite=None,reason=f"Admin Game Reset [{ctx.author.display_name}]")
+                        await self.wolfChannel.set_permissions(player.member,overwrite=None,reason=f"Admin Game Reset [{ctx.author.display_name}]")
                 # Clear and Reset Variables
                 self.gameRunning = False
                 self.isDay = True
@@ -831,8 +830,10 @@ class werewolf(commands.Cog):
                 if indPlayer.role == "V-1":
                     villagers.append(indPlayer)
                 # Gives wolves explicit access to wolfchat
-                elif indPlayer.role[0] == "W":
+                if indPlayer.role[0] == "W":
                     await self.wolfChannel.set_permissions(indPlayer.member, read_messages = True, send_messages = True, reason=f"[{self.gameId}] Werewolf Game Initiation")
+                else:
+                    await self.wolfChannel.set_permissions(indPlayer.member, read_messages = False, send_messages = False, reason=f"[{self.gameId}] Werewolf Game Initiation")
                 # DM Portion
                 try:
                     await indPlayer.member.send(f"{self.roleIntroductions[indPlayer.role]}")
@@ -913,8 +914,7 @@ class werewolf(commands.Cog):
                 player = self.players[item]
                 await player.member.remove_roles(self.playerRole,reason=f"[{self.gameId}] Werewolf Game End")
                 await self.spectatorChannel.set_permissions(player.member,overwrite=None,reason=f"[{self.gameId}] Werewolf Game End")
-                if player.role[0] == "W":
-                    await self.wolfChannel.set_permissions(player.member,overwrite=None,reason=f"[{self.gameId}] Werewolf Game End")
+                await self.wolfChannel.set_permissions(player.member,overwrite=None,reason=f"[{self.gameId}] Werewolf Game End")
             # Aesthetics Bit
             winningTeam = ""
             if not forceEnd:

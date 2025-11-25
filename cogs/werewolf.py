@@ -774,6 +774,8 @@ class werewolf(commands.Cog):
 
     async def gameStart(self):
         try:
+            gamemode = "default"
+            self.selectedMode = "default"
             # Gathers the list of roles
             rawVotes = list(self.playerVotes.values())
             try:
@@ -785,12 +787,14 @@ class werewolf(commands.Cog):
                     gamemode, gmCount = gmCounter.most_common(1)[0]
                     # Makes sure a majority of voting players have voted for the gamemode. If they haven't, then it default to default
                     if gmCount >= math.ceil((len(self.playerVotes)/2)):
-                        pass
+                        self.selectedMode = gamemode
                     else:
+                        self.selectedMode = "default"
                         gamemode = "default"
             except Exception as e:
                 print(f"Vote Calculation Error: {e}")
-                self.selectedMode = gamemode
+                self.selectedMode = "default"
+                gamemode = "default"
             success = await self.initialiseStats()
             if success:
                 self.savingStats = True

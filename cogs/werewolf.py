@@ -787,7 +787,12 @@ class werewolf(commands.Cog):
                     gamemode, gmCount = gmCounter.most_common(1)[0]
                     # Makes sure a majority of voting players have voted for the gamemode. If they haven't, then it default to default
                     if gmCount >= math.ceil((len(self.playerVotes)/2)):
-                        self.selectedMode = gamemode
+                        # None is the default vote entered when a player joins the game
+                        if gamemode == None:
+                            gamemode = "default"
+                            self.selectedMode = "default"
+                        else:
+                            self.selectedMode = gamemode
                     else:
                         self.selectedMode = "default"
                         gamemode = "default"
@@ -2032,6 +2037,9 @@ class werewolf(commands.Cog):
             rolesDict = self.orgy
         elif mode == "testing":
             rolesDict = self.testingMode
+        # Defaults to default if there is an issue with the content passed into the mode parameter
+        else:
+            rolesDict = self.default 
 
         index = rolesDict["players"].index(playerCount)
         # Output mode selection

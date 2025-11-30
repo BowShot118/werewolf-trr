@@ -271,14 +271,7 @@ class werewolf(commands.Cog):
         }
 
         self.totems = {
-            "Protection" : "", 
-            "Death"      : "", 
-            "Impatience" : "", 
-            "Influence"  : "", 
-            "Silence"    : "", 
-            "Reveal"     : "", 
-            "Pacifism"   : "", 
-            "Desperation": ""
+            "Impatience" : "" 
         }
         # Roles and Role Number for 
         self.testingMode = {
@@ -1236,7 +1229,6 @@ class werewolf(commands.Cog):
 
                 # Updates / Clears the relevant variables
                 self.killVotes = []
-                self.impatientVoters = []
                 for item in self.livingPlayersNames:
                     player = self.players[item]
                     player.actionDone = False
@@ -1690,9 +1682,24 @@ class werewolf(commands.Cog):
             if len(target) > 1:
                 return None
             else:
-                self.workingImpatientVoters = [voter_id for voter_id in self.impatientVoters
-                if not any(vote[0] == voter_id or vote[1] == target for vote in self.killVotes)]
+                self.workingImpatientVoters = []
                 target = mostCommonItems[0]
+                # Impatience Calculations
+                for voter in self.impatientVoters:
+                    # Checking if the target is the impatient voter
+                    valid = True
+                    if target == self.livingPlayersNames[voter]:
+                        valid = False
+                    else:
+                        for vote in self.killVotes:
+                            # Checking if the impatient voter has already voted for the target
+                            if vote[0] == voter:
+                                if vote[1] == target:
+                                    valid = False
+                                    break
+
+                    if valid == True:
+                        self.workingImpatientVoters.append(voter)
                 threshold = math.floor((len(self.livingPlayersNames)/2)-len(self.workingImpatientVoters) + 1)
                 print(f"Lynch Threshold: {threshold}")
                 # Checking if the target has met the threshold and the game isn't forcing a lynch calculation

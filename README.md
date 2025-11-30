@@ -1,4 +1,4 @@
-# Werewolf Bot v1
+# Werewolf Bot v1.0.1
 A Discord bot to run a game of "Werewolf", a variation of the "Town of Salem" game. Inspired by and intended to act as a replacement of https://github.com/belguawhale/Discord-Werewolf for the discord server for the NationStates region The Rejected Realms.
 
 ## Requirements

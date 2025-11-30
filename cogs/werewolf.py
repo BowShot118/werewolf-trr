@@ -269,7 +269,7 @@ class werewolf(commands.Cog):
             "N-2" : "Jesters are **neutral**. They win by being lynched during the day.",
             "N-3" : "Fools are **neutral**. If they are lynched during the day, they become the game's sole winner*."
         }
-        
+
         self.totems = {
             "Protection" : "", 
             "Death"      : "", 
@@ -1998,6 +1998,7 @@ class werewolf(commands.Cog):
             closestMatch (str | None) - The user that is the closest match to the input.\n
             closestMatchId (int | None) - The id of the user that is the closest match to the input."""
         closestMatch = ""
+        msg = msg.lower()
 
         ## Checking Ids
         validIds = list(self.livingPlayersNames.keys())

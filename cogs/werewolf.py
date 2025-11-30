@@ -583,7 +583,8 @@ class werewolf(commands.Cog):
                     if totalVotes == []:
                         await ctx.reply(f"There have been no votes\n```{livingPlayers}```")
                     else:
-                        votesEmbed = discord.Embed(title="Gamemode Votes",description=f"{math.ceil((len(self.playerVotes)/2))} votes required to decide a gamemode.\n{livingPlayers}",colour=discord.Color.dark_gold())
+                        lynchThreshold = math.floor((len(self.livingPlayersNames)/2) + 1)
+                        votesEmbed = discord.Embed(title="Gamemode Votes",description=f"{lynchThreshold} votes required to decide a gamemode.\n{livingPlayers}",colour=discord.Color.dark_gold())
                         for row in totalVotes:
                             voters = ""
                             for player in row[1]:

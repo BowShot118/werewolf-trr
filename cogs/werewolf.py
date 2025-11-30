@@ -759,6 +759,7 @@ class werewolf(commands.Cog):
                 self.dayCount = 0
                 self.winningFool = 0
                 self.gameId = 0
+                self.impatientVoters = []
 
                 await self.gameChannel.set_permissions(self.everyoneRole, send_messages=True, reason=f"Admin Game Reset [{ctx.author.display_name}]")
                 await self.gameChannel.send("Game Reset Successfully")
@@ -975,6 +976,7 @@ class werewolf(commands.Cog):
             self.nightCount = 0
             self.dayCount = 0
             self.winningFool = 0
+            self.impatientVoters = []
             
             # Restoring game channel access
             chatOverwrite = self.gameChannel.overwrites_for(self.everyoneRole)
@@ -996,6 +998,7 @@ class werewolf(commands.Cog):
                 # Flips the daytime variable, allowing night actions to take place
                 self.nightCount += 1
                 self.killVotes = []
+                self.impatientVoters = []
                 liveWolfTeam = ""
                 # Win Condition Check
                 if await self.winCalculation(results=False):
@@ -1233,6 +1236,7 @@ class werewolf(commands.Cog):
 
                 # Updates / Clears the relevant variables
                 self.killVotes = []
+                self.impatientVoters = []
                 for item in self.livingPlayersNames:
                     player = self.players[item]
                     player.actionDone = False

@@ -1691,7 +1691,7 @@ class werewolf(commands.Cog):
                 return None
             else:
                 self.workingImpatientVoters = [voter_id for voter_id in self.impatientVoters
-                if not any(vote[0] == voter_id and vote[1] == target for vote in self.killVotes)]
+                if not any(vote[0] == voter_id or vote[1] == target for vote in self.killVotes)]
                 target = mostCommonItems[0]
                 threshold = math.floor((len(self.livingPlayersNames)/2)-len(self.workingImpatientVoters) + 1)
                 print(f"Lynch Threshold: {threshold}")

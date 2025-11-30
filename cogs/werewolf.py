@@ -762,7 +762,9 @@ class werewolf(commands.Cog):
                 self.gameId = 0
                 self.impatientVoters = []
 
-                await self.gameChannel.set_permissions(self.everyoneRole, send_messages=True, reason=f"Admin Game Reset [{ctx.author.display_name}]")
+                chatOverwrite = self.gameChannel.overwrites_for(self.everyoneRole)
+                chatOverwrite.send_messages = True
+                await self.gameChannel.set_permissions(self.everyoneRole, overwrite=chatOverwrite, reason=f"Admin Game Reset [{ctx.author.display_name}]")
                 await self.gameChannel.send("Game Reset Successfully")
         except Exception as e:
             print(f"{e}")

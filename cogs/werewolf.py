@@ -1132,7 +1132,6 @@ class werewolf(commands.Cog):
         """Werewolf function to execute the start of day"""
         try:
             if self.gameRunning:
-                await self.gameChannel.send("Night has ended")
                 self.dayCount += 1
                 self.isDay = True
                 livingPlayersPing = await self.livingPlayersPing()

@@ -269,10 +269,16 @@ class werewolf(commands.Cog):
             "N-2" : "Jesters are **neutral**. They win by being lynched during the day.",
             "N-3" : "Fools are **neutral**. If they are lynched during the day, they become the game's sole winner*."
         }
-
+        
         self.totems = {
-            "Impatience" : "",
-            "Pacifism" : "" 
+            "Protection" : "", 
+            "Death"      : "", 
+            "Impatience" : "", 
+            "Influence"  : "", 
+            "Silence"    : "", 
+            "Reveal"     : "", 
+            "Pacifism"   : "", 
+            "Desperation": ""
         }
         # Roles and Role Number for 
         self.testingMode = {

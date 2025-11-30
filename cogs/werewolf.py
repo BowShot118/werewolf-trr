@@ -271,7 +271,8 @@ class werewolf(commands.Cog):
         }
 
         self.totems = {
-            "Impatience" : "" 
+            "Impatience" : "",
+            "Pacifism" : "" 
         }
         # Roles and Role Number for 
         self.testingMode = {
@@ -1699,7 +1700,11 @@ class werewolf(commands.Cog):
                                     break
 
                     if valid == True:
-                        self.workingImpatientVoters.append(voter)
+                        # Pacifism Check
+                        votingPlayer = self.players[voter]
+                        print(votingPlayer.votingPower)
+                        if votingPlayer.votingPower > 0:
+                            self.workingImpatientVoters.append(voter)
                 threshold = math.floor((len(self.livingPlayersNames)/2)-len(self.workingImpatientVoters) + 1)
                 print(f"Lynch Threshold: {threshold}")
                 # Checking if the target has met the threshold and the game isn't forcing a lynch calculation
@@ -1913,7 +1918,7 @@ class werewolf(commands.Cog):
                     case "Influence":
                         player.votingPower += 1
                     case "Pacifism":
-                        if player.votingPower > 1:
+                        if player.votingPower > 0:
                             player.votingPower -= 1
                     case "Impatience":
                         self.impatientVoters.append(player.member.id)

@@ -283,14 +283,14 @@ class werewolf(commands.Cog):
         # Roles and Role Number for 
         self.testingMode = {
             "players" : [4,5,6,7,8,9,10,11,12,13,14,15,16],
-            "V-1"     : [0,3,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Villager
-            "W-1"     : [0,1,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf
-            "V-2"     : [0,1,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Seer
-            "V-3"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Shaman
+            "V-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Villager
+            "W-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf
+            "V-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Seer
+            "V-3"     : [0,4,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Shaman
             "V-4"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Harlot
             "V-5"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Matchmaker
             "W-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Traitor
-            "W-3"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf Shaman
+            "W-3"     : [0,1,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf Shaman
             "W-4"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf Cub
             "T-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Cultist
             "S-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Cursed
@@ -1700,7 +1700,7 @@ class werewolf(commands.Cog):
                     lynchedPlayer = self.players[targetId]
                     if len(self.workingImpatientVoters) > 0:
                         for voter in self.workingImpatientVoters:
-                            await self.gameChannel.send(f"<@!{voter}> was impatient and voted for {player.member.name}.")
+                            await self.gameChannel.send(f"<@!{voter}> was impatient and voted for {lynchedPlayer.member.name}.")
                     if "Reveal" in lynchedPlayer.specialTotems:
                         lynchedRole = await self.revealTotem(targetId)
                         revealed = True

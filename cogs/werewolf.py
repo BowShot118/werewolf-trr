@@ -283,18 +283,18 @@ class werewolf(commands.Cog):
         # Roles and Role Number for 
         self.testingMode = {
             "players" : [4,5,6,7,8,9,10,11,12,13,14,15,16],
-            "V-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Villager
-            "W-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf
-            "V-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Seer
-            "V-3"     : [0,4,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Shaman
+            "V-1"     : [0,3,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Villager
+            "W-1"     : [0,1,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf
+            "V-2"     : [0,1,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Seer
+            "V-3"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Shaman
             "V-4"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Harlot
             "V-5"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Matchmaker
             "W-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Traitor
-            "W-3"     : [0,1,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf Shaman
+            "W-3"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf Shaman
             "W-4"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf Cub
             "T-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Cultist
             "S-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Cursed
-            "S-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Gunner
+            "S-2"     : [0,2,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Gunner
             "S-5"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Assassin
             "N-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Crazed Shaman
             "N-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Jester
@@ -863,13 +863,14 @@ class werewolf(commands.Cog):
             if "S-2" in secondaryRoles:
                 bulletCount = 0
                 assignmentAttempts = 0
+                listToManipulate = list(self.players.values())
                 # 1 Bullet for every 5 players above 10
                 if playerCount < 11:
                     bulletCount = 1
                 else:
                     bulletCount = 1 + math.floor((playerCount-10) // 5)
                 while "S-2" in secondaryRoles:
-                    potentialGunner = random.choice(list(self.players.values()))
+                    potentialGunner = random.choice(listToManipulate)
                     # Prevents wolf team gunner when not using chaos or random
                     if potentialGunner.role[0] != "W" and gamemode not in ["chaos","random"] and "S-2" not in potentialGunner.secondaryRoles and "S-3" not in potentialGunner.secondaryRoles:
                         sharpChance = random.randint(1,5) # 20% Chance of sharpshooter
@@ -882,6 +883,7 @@ class werewolf(commands.Cog):
                             potentialGunner.bullets += bulletCount
                         await potentialGunner.member.send(f"You have a gun and {bulletCount} bullets. You may use it during the day to kill someone using `!shoot <player>`")
                         secondaryRoles.remove("S-2")
+                    listToManipulate.remove(potentialGunner)
                     assignmentAttempts += 1
                     if assignmentAttempts > 50:
                         await self.gameChannel.send("Issue assigning all of the guns")

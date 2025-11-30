@@ -294,7 +294,7 @@ class werewolf(commands.Cog):
             "W-4"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf Cub
             "T-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Cultist
             "S-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Cursed
-            "S-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Gunner
+            "S-2"     : [0,2,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Gunner
             "S-5"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Assassin
             "N-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Crazed Shaman
             "N-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Jester
@@ -583,7 +583,8 @@ class werewolf(commands.Cog):
                     if totalVotes == []:
                         await ctx.reply(f"There have been no votes\n```{livingPlayers}```")
                     else:
-                        votesEmbed = discord.Embed(title="Gamemode Votes",description=f"{math.ceil((len(self.playerVotes)/2))} votes required to decide a gamemode.\n{livingPlayers}",colour=discord.Color.dark_gold())
+                        lynchThreshold = math.floor((len(self.livingPlayersNames)/2) + 1)
+                        votesEmbed = discord.Embed(title="Gamemode Votes",description=f"{lynchThreshold} votes required to decide a gamemode.\n{livingPlayers}",colour=discord.Color.dark_gold())
                         for row in totalVotes:
                             voters = ""
                             for player in row[1]:
@@ -759,8 +760,11 @@ class werewolf(commands.Cog):
                 self.dayCount = 0
                 self.winningFool = 0
                 self.gameId = 0
+                self.impatientVoters = []
 
-                await self.gameChannel.set_permissions(self.everyoneRole, send_messages=True, reason=f"Admin Game Reset [{ctx.author.display_name}]")
+                chatOverwrite = self.gameChannel.overwrites_for(self.everyoneRole)
+                chatOverwrite.send_messages = True
+                await self.gameChannel.set_permissions(self.everyoneRole, overwrite=chatOverwrite, reason=f"Admin Game Reset [{ctx.author.display_name}]")
                 await self.gameChannel.send("Game Reset Successfully")
         except Exception as e:
             print(f"{e}")
@@ -862,13 +866,14 @@ class werewolf(commands.Cog):
             if "S-2" in secondaryRoles:
                 bulletCount = 0
                 assignmentAttempts = 0
+                listToManipulate = list(self.players.values())
                 # 1 Bullet for every 5 players above 10
                 if playerCount < 11:
                     bulletCount = 1
                 else:
                     bulletCount = 1 + math.floor((playerCount-10) // 5)
                 while "S-2" in secondaryRoles:
-                    potentialGunner = random.choice(list(self.players.values()))
+                    potentialGunner = random.choice(listToManipulate)
                     # Prevents wolf team gunner when not using chaos or random
                     if potentialGunner.role[0] != "W" and gamemode not in ["chaos","random"] and "S-2" not in potentialGunner.secondaryRoles and "S-3" not in potentialGunner.secondaryRoles:
                         sharpChance = random.randint(1,5) # 20% Chance of sharpshooter
@@ -881,6 +886,7 @@ class werewolf(commands.Cog):
                             potentialGunner.bullets += bulletCount
                         await potentialGunner.member.send(f"You have a gun and {bulletCount} bullets. You may use it during the day to kill someone using `!shoot <player>`")
                         secondaryRoles.remove("S-2")
+                    listToManipulate.remove(potentialGunner)
                     assignmentAttempts += 1
                     if assignmentAttempts > 50:
                         await self.gameChannel.send("Issue assigning all of the guns")
@@ -975,6 +981,7 @@ class werewolf(commands.Cog):
             self.nightCount = 0
             self.dayCount = 0
             self.winningFool = 0
+            self.impatientVoters = []
             
             # Restoring game channel access
             chatOverwrite = self.gameChannel.overwrites_for(self.everyoneRole)
@@ -996,6 +1003,7 @@ class werewolf(commands.Cog):
                 # Flips the daytime variable, allowing night actions to take place
                 self.nightCount += 1
                 self.killVotes = []
+                self.impatientVoters = []
                 liveWolfTeam = ""
                 # Win Condition Check
                 if await self.winCalculation(results=False):
@@ -1126,7 +1134,6 @@ class werewolf(commands.Cog):
         """Werewolf function to execute the start of day"""
         try:
             if self.gameRunning:
-                await self.gameChannel.send("Night has ended")
                 self.dayCount += 1
                 self.isDay = True
                 livingPlayersPing = await self.livingPlayersPing()
@@ -1686,9 +1693,28 @@ class werewolf(commands.Cog):
             if len(target) > 1:
                 return None
             else:
-                self.workingImpatientVoters = [voter_id for voter_id in self.impatientVoters
-                if not any(vote[0] == voter_id and vote[1] == target for vote in self.killVotes)]
+                self.workingImpatientVoters = []
                 target = mostCommonItems[0]
+                # Impatience Calculations
+                for voter in self.impatientVoters:
+                    # Checking if the target is the impatient voter
+                    valid = True
+                    if target == self.livingPlayersNames[voter]:
+                        valid = False
+                    else:
+                        for vote in self.killVotes:
+                            # Checking if the impatient voter has already voted for the target
+                            if vote[0] == voter:
+                                if vote[1] == target:
+                                    valid = False
+                                    break
+
+                    if valid == True:
+                        # Pacifism Check
+                        votingPlayer = self.players[voter]
+                        print(votingPlayer.votingPower)
+                        if votingPlayer.votingPower > 0:
+                            self.workingImpatientVoters.append(voter)
                 threshold = math.floor((len(self.livingPlayersNames)/2)-len(self.workingImpatientVoters) + 1)
                 print(f"Lynch Threshold: {threshold}")
                 # Checking if the target has met the threshold and the game isn't forcing a lynch calculation
@@ -1700,7 +1726,7 @@ class werewolf(commands.Cog):
                     lynchedPlayer = self.players[targetId]
                     if len(self.workingImpatientVoters) > 0:
                         for voter in self.workingImpatientVoters:
-                            await self.gameChannel.send(f"<@!{voter}> was impatient and voted for {player.member.name}.")
+                            await self.gameChannel.send(f"<@!{voter}> was impatient and voted for {lynchedPlayer.member.name}.")
                     if "Reveal" in lynchedPlayer.specialTotems:
                         lynchedRole = await self.revealTotem(targetId)
                         revealed = True
@@ -1902,7 +1928,7 @@ class werewolf(commands.Cog):
                     case "Influence":
                         player.votingPower += 1
                     case "Pacifism":
-                        if player.votingPower > 1:
+                        if player.votingPower > 0:
                             player.votingPower -= 1
                     case "Impatience":
                         self.impatientVoters.append(player.member.id)
@@ -1976,6 +2002,7 @@ class werewolf(commands.Cog):
             closestMatch (str | None) - The user that is the closest match to the input.\n
             closestMatchId (int | None) - The id of the user that is the closest match to the input."""
         closestMatch = ""
+        msg = msg.lower()
 
         ## Checking Ids
         validIds = list(self.livingPlayersNames.keys())

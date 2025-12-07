@@ -283,22 +283,22 @@ class werewolf(commands.Cog):
         # Roles and Role Number for 
         self.testingMode = {
             "players" : [4,5,6,7,8,9,10,11,12,13,14,15,16],
-            "V-1"     : [0,3,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Villager
-            "W-1"     : [0,1,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf
-            "V-2"     : [0,1,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Seer
-            "V-3"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Shaman
-            "V-4"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Harlot
-            "V-5"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Matchmaker
-            "W-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Traitor
-            "W-3"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf Shaman
-            "W-4"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Wolf Cub
-            "T-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Cultist
-            "S-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Cursed
-            "S-2"     : [0,2,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Gunner
-            "S-5"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Assassin
-            "N-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Crazed Shaman
-            "N-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ], # Jester
-            "N-3"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ]  # Fool
+            "V-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ,1 ], # Villager
+            "V-2"     : [0,0,0,0,1,1,1 ,1 ,1 ,1 ,1 ,1 ,7 ], # Seer
+            "V-3"     : [3,4,4,5,4,4,4 ,5 ,5 ,5 ,5 ,6 ,2 ], # Shaman
+            "V-4"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ,0 ], # Harlot
+            "V-5"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ,0 ], # Matchmaker
+            "W-1"     : [1,1,1,1,1,1,1 ,1 ,2 ,2 ,2 ,2 ,2 ], # Wolf
+            "W-2"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ,0 ], # Traitor
+            "W-3"     : [0,0,0,0,1,1,1 ,1 ,1 ,1 ,2 ,2 ,2 ], # Wolf Shaman
+            "W-4"     : [0,0,0,0,0,0,1 ,1 ,1 ,1 ,1 ,1 ,1 ], # Wolf Cub
+            "T-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ,0 ], # Cultist
+            "N-1"     : [0,0,0,0,0,1,1 ,1 ,1 ,1 ,1 ,1 ,1 ], # Crazed Shaman
+            "N-2"     : [0,0,1,1,1,1,1 ,1 ,1 ,2 ,2 ,2 ,2 ], # Jester
+            "N-3"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ,0 ], # Fool
+            "S-1"     : [0,0,0,0,0,0,0 ,0 ,0 ,0 ,0 ,0 ,0 ], # Cursed
+            "S-2"     : [1,5,1,1,1,2,2 ,2 ,3 ,3 ,3 ,3 ,3 ], # Gunner
+            "S-5"     : [0,0,0,0,0,1,1 ,2 ,2 ,2 ,2 ,3 ,3 ]  # Assassin
         }
         self.default = {
             "players" : [4,5,6,7,8,9,10,11,12,13,14,15,16],
@@ -874,8 +874,13 @@ class werewolf(commands.Cog):
                     bulletCount = 1 + math.floor((playerCount-10) // 5)
                 while "S-2" in secondaryRoles:
                     potentialGunner = random.choice(listToManipulate)
+                    validAssignment = False
                     # Prevents wolf team gunner when not using chaos or random
-                    if potentialGunner.role[0] != "W" and gamemode not in ["chaos","random"] and "S-2" not in potentialGunner.secondaryRoles and "S-3" not in potentialGunner.secondaryRoles:
+                    if gamemode in ["chaos","random"] and "S-2" not in potentialGunner.secondaryRoles and "S-3" not in potentialGunner.secondaryRoles:
+                        validAssignment = True
+                    elif potentialGunner.role[0] != "W" and "S-2" not in potentialGunner.secondaryRoles and "S-3" not in potentialGunner.secondaryRoles:
+                        validAssignment = True
+                    if validAssignment:
                         sharpChance = random.randint(1,5) # 20% Chance of sharpshooter
                         if sharpChance == 1:
                             await potentialGunner.defineRole("S-3",False)
